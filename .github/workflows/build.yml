@@ -1,0 +1,27 @@
+name: Build Luckfox Pico YOLOv5
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y cmake build-essential crossbuild-essential-armhf
+
+    - name: Build
+      run: |
+        mkdir build && cd build
+        cmake .. -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++
+        make -j$(nproc)
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: yolov5_demo
+        path: build/yolov5_demo
